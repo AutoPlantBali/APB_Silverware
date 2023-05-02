@@ -143,19 +143,18 @@ static void setup_4way_external_interrupt(void);
 #endif									   
 int random_seed = 0;
 
-int main(void)
-{
-	
+int main(void){
 	delay(1000);
-
 
 #ifdef ENABLE_OVERCLOCK
 clk_init();
+delay(1000);
 #endif
 	
-  gpio_init();	
+  gpio_init();
+  delay(1000);	
   ledon(255);									//Turn on LED during boot so that if a delay is used as part of using programming pins for other functions, the FC does not appear inactive while programming times out
-	spi_init();
+  spi_init();
 	
   time_init();
 
@@ -248,7 +247,7 @@ for ( int i = 6 ; i > 0 ; i--)
 	
 #ifdef STOP_LOWBATTERY
 // infinite loop
-if ( vbattfilt/lipo_cell_count < 3.3f) failloop(2);
+if ( (vbattfilt + 0.1f) / lipo_cell_count < STOP_VOLTBATTERY) failloop(2);
 #endif
 
 
@@ -331,7 +330,7 @@ if ( liberror )
 		imu_calc(); 
        
       
-// battery low logic
+		// battery low logic
 
         // read acd and scale based on processor voltage
 		float battadc = adc_read(0)*vreffilt; 
@@ -357,76 +356,77 @@ if ( liberror )
 
 // compensation factor for li-ion internal model
 // zero to bypass
-#define CF1 0.25f
+// #define CF1 0.25f
 
-        float tempvolt = vbattfilt*( 1.00f + CF1 )  - vbattfilt_corr* ( CF1 );
+//         float tempvolt = vbattfilt*( 1.00f + CF1 )  - vbattfilt_corr* ( CF1 );
 
-#ifdef AUTO_VDROP_FACTOR
+// #ifdef AUTO_VDROP_FACTOR
 
-static float lastout[12];
-static float lastin[12];
-static float vcomp[12];
-static float score[12];
-static int z = 0;
-static int minindex = 0;
-static int firstrun = 1;
+// static float lastout[12];
+// static float lastin[12];
+// static float vcomp[12];
+// static float score[12];
+// static int z = 0;
+// static int minindex = 0;
+// static int firstrun = 1;
 
 
-if( thrfilt > 0.1f )
-{
-	vcomp[z] = tempvolt + (float) z *0.1f * thrfilt;
+// if( thrfilt > 0.1f )
+// {
+// 	vcomp[z] = tempvolt + (float) z *0.1f * thrfilt;
 		
-	if ( firstrun ) 
-    {
-        for (int y = 0 ; y < 12; y++) lastin[y] = vcomp[z];
-        firstrun = 0;
-    }
-	float ans;
-	//	y(n) = x(n) - x(n-1) + R * y(n-1) 
-	//  out = in - lastin + coeff*lastout
-		// hpf
-	ans = vcomp[z] - lastin[z] + FILTERCALC( 1000*12 , 6000e3) *lastout[z];
-	lastin[z] = vcomp[z];
-	lastout[z] = ans;
-	lpf ( &score[z] , ans*ans , FILTERCALC( 1000*12 , 60e6 ) );	
-	z++;
+// 	if ( firstrun ) 
+//     {
+//         for (int y = 0 ; y < 12; y++) lastin[y] = vcomp[z];
+//         firstrun = 0;
+//     }
+// 	float ans;
+// 	//	y(n) = x(n) - x(n-1) + R * y(n-1) 
+// 	//  out = in - lastin + coeff*lastout
+// 		// hpf
+// 	ans = vcomp[z] - lastin[z] + FILTERCALC( 1000*12 , 6000e3) *lastout[z];
+// 	lastin[z] = vcomp[z];
+// 	lastout[z] = ans;
+// 	lpf ( &score[z] , ans*ans , FILTERCALC( 1000*12 , 60e6 ) );	
+// 	z++;
        
-    if ( z >= 12 )
-    {
-        z = 0;
-        float min = score[0]; 
-        for ( int i = 0 ; i < 12; i++ )
-        {
-         if ( (score[i]) < min )  
-            {
-                min = (score[i]);
-                minindex = i;
-                // add an offset because it seems to be usually early
-                minindex++;
-            }
-        }   
-    }
+//     if ( z >= 12 )
+//     {
+//         z = 0;
+//         float min = score[0]; 
+//         for ( int i = 0 ; i < 12; i++ )
+//         {
+//          if ( (score[i]) < min )  
+//             {
+//                 min = (score[i]);
+//                 minindex = i;
+//                 // add an offset because it seems to be usually early
+//                 minindex++;
+//             }
+//         }   
+//     }
 
-}
+// }
 
-#undef VDROP_FACTOR
-#define VDROP_FACTOR  minindex * 0.1f
-#endif
+// #undef VDROP_FACTOR
+// #define VDROP_FACTOR  minindex * 0.1f
+// #endif
 
-    float hyst;
-    if ( lowbatt ) hyst = HYST;
-    else hyst = 0.0f;
+    // float hyst;
+    // if ( lowbatt ) hyst = HYST;
+    // else hyst = 0.0f;
 
-    if (( tempvolt + (float) VDROP_FACTOR * thrfilt <(float) VBATTLOW + hyst )
-        || ( vbattfilt < ( float ) 2.7f ) )
+	vbatt_comp = vbattfilt + 0.1f;
+    if (vbatt_comp < ( float )VBATTLOW * (float)lipo_cell_count )
         lowbatt = 1;
     else lowbatt = 0;
 
-    vbatt_comp = tempvolt + (float) VDROP_FACTOR * thrfilt; 	
+    // vbatt_comp = tempvolt + (float) VDROP_FACTOR * thrfilt; 	
 
            
 #ifdef DEBUG
-	debug.vbatt_comp = vbatt_comp ;
+	debug.vbatt_comp = vbatt_comp;
+	debug.vbattfilt = vbattfilt;
 #endif		
 // check gestures
     if ( onground )

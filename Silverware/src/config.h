@@ -105,14 +105,14 @@
 //*************be active.  With LEVELMODE active - MCU will apply RACEMODE if racemode channel is on, HORIZON if horizon 
 //*************channel is on, or racemodeHORIZON if both channels are on - and will be standard LEVELMODE if neither 
 //*************racemode or horizon are switched on.
-#define ARMING CHAN_5
-#define IDLE_UP CHAN_5
-#define LEVELMODE CHAN_6
-#define RACEMODE  CHAN_7
-#define HORIZON   CHAN_8
-#define PIDPROFILE CHAN_9                //For switching stickAccelerator & stickTransition profiles on pid.c page
+//#define ARMING CHAN_5
+//#define IDLE_UP CHAN_5
+#define LEVELMODE CHAN_5
+#define RACEMODE  CHAN_OFF
+#define HORIZON   CHAN_OFF
+#define PIDPROFILE CHAN_OFF                //For switching stickAccelerator & stickTransition profiles on pid.c page
 #define RATES CHAN_ON
-#define LEDS_ON CHAN_10
+#define LEDS_ON CHAN_7
 
 // *************switch for fpv / other, requires fet
 // *************comment out to disable
@@ -122,7 +122,7 @@
 // *************external buzzer requires pin assignment in hardware.h before defining below
 // *************change channel assignment from CHAN_OFF to a numbered aux switch if you want switch control
 // *************if no channel is assigned but buzzer is set to CHAN_ON - buzzer will activate on LVC and FAILSAFE.
-//#define BUZZER_ENABLE CHAN_OFF
+#define BUZZER_ENABLE CHAN_ON
 
 // *************start in level mode for toy tx.  Must comment out STICK_TRAVEL_CHECK to assign CH_AUX1 to an aux feature
 //#define AUX1_START_ON
@@ -137,7 +137,7 @@
 //***********************************************VOLTAGE SETTINGS*******************************************************
 
 // ************* Set your lipo cell count to override auto cell count detect logic
-//#define LIPO_CELL_COUNT 1
+// #define LIPO_CELL_COUNT 1
 
 // ************* Raises pids automatically as battery voltage drops in flight.  Ensure voltage is calibrated before use ****CRITICAL****.
 #define PID_VOLTAGE_COMPENSATION
@@ -152,9 +152,10 @@
 #define LVC_LOWER_THROTTLE_VOLTAGE_RAW 2.70
 #define LVC_LOWER_THROTTLE_KP 3.0
 
-// *************do not start software if battery is too low (below 3.3v per cell) - only works on 1s lipos
+// *************do not start software if battery is too low (below 3.3v per cell)
 // *************flashes 2 times repeatedly at startup
 #define STOP_LOWBATTERY
+#define STOP_VOLTBATTERY 3.3f
 
 // *************voltage per cell to start warning led blinking
 #define VBATTLOW 3.5

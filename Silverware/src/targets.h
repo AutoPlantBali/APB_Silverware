@@ -70,7 +70,7 @@
 #define MOTOR3_PIN_PA7 // motor 3 front-right
 #endif
 
-//===============
+//================
 //Auto Plant Bali
 #ifdef AutoPlantBali_Brushed
 //LEDS
@@ -106,7 +106,7 @@
 #define SPI_SS_PIN GPIO_Pin_z
 #define SPI_SS_PORT GPIOA
 #define RADIO_CHECK
-#else
+#elif defined(RX_NRF24_BAYANG_TELEMETRY)
 #define SOFTSPI_4WIRE
 #define SPI_MISO_PIN GPIO_Pin_0
 #define SPI_MISO_PORT GPIOA
@@ -117,7 +117,17 @@
 #define SPI_SS_PIN GPIO_Pin_3
 #define SPI_SS_PORT GPIOA
 #define RADIO_CHECK
-// #define RADIO_XN297
+#define RADIO_XN297
+#else
+#define SOFTSPI_3WIRE
+#define SPI_MOSI_PIN GPIO_Pin_1
+#define SPI_MOSI_PORT GPIOA
+#define SPI_CLK_PIN GPIO_Pin_2
+#define SPI_CLK_PORT GPIOA
+#define SPI_SS_PIN GPIO_Pin_3
+#define SPI_SS_PORT GPIOA
+#define RADIO_XN297L
+#define RADIO_CHECK
 #endif
 
 //VOLTAGE DIVIDER

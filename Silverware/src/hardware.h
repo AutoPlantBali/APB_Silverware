@@ -72,7 +72,7 @@
 
 
 // disable the check for known gyro that causes the 4 times flash
-#define DISABLE_GYRO_CHECK
+//#define DISABLE_GYRO_CHECK
 
 // TODO: gyro ids for the gyro check
 //move to sixaxis & defines.h

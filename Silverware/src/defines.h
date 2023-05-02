@@ -276,7 +276,7 @@
 // *************compensation for battery voltage vs throttle drop
 #define VDROP_FACTOR 0.7
 // *************calculate above factor automatically
-#define AUTO_VDROP_FACTOR
+// #define AUTO_VDROP_FACTOR
 
 // *************voltage hysteresis in volts
 #define HYST 0.10

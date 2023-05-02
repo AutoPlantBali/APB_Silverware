@@ -22,7 +22,7 @@ int xn_readreg( int reg)
 {
 	reg = reg&REGISTER_MASK;
 	spi_cson();
-	spi_sendrecvbyte( reg);
+	spi_sendrecvbyte(reg);
 	int val =spi_sendzerorecvbyte();
 	spi_csoff();
 	return val;

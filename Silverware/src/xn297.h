@@ -35,6 +35,8 @@ void xn_writetxaddress(  int *addr )	;
 #define RX_PW_P4    0x15
 #define RX_PW_P5    0x16
 #define FIFO_STATUS 0x17
+#define NRF_24_DYNPD       0x1C
+#define NRF_24_FEATURE     0x1D
 
 // bit masks
 #define MASK_RX_DR  6
@@ -99,6 +101,8 @@ void xn_writetxaddress(  int *addr )	;
 #define BITRATE_1M 		0x0
 #define BITRATE_2M 		0x1
 #define BITRATE_250K 	0x2
+
+#define ACTIVATE      0x50
 
 
 

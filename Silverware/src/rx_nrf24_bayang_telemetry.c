@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "defines.h"
 #include "rx_bayang.h"
 #include "util.h"
+#include "led.h"
 
 
 // radio settings
@@ -85,7 +86,9 @@ void writeregs(uint8_t data[], uint8_t size)
 const uint8_t xn297_scramble[] = {
     0xe3, 0xb1, 0x4b, 0xea, 0x85, 0xbc, 0xe5, 0x66,
     0x0d, 0xae, 0x8c, 0x88, 0x12, 0x69, 0xee, 0x1f,
-    0xc7, 0x62, 0x97, 0xd5, 0x0b, 0x79, 0xca, 0xcc };
+    0xc7, 0x62, 0x97, 0xd5, 0x0b, 0x79, 0xca, 0xcc,
+    0x1b, 0x5d, 0x19, 0x10, 0x24, 0xd3, 0xdc, 0x3f,
+    0x8e, 0xc5, 0x2f };
 
    
     
@@ -204,8 +207,6 @@ int bind_safety = 0;
 int rxdata[17 + 2* crc_en];
 
 
-
-
 void rx_init()
 {
 
@@ -221,15 +222,29 @@ void rx_init()
 
     
 #ifdef RADIO_CHECK
+    int recheck = 3; // re check spi
     int rxcheck = xn_readreg(0x0f); // rx address pipe 5   
     // should be 0xc6
     extern void failloop(int);
-    if (rxcheck != 0xc6)
-        failloop(3);
+    if (rxcheck != 0xc6){
+        for(int i = recheck; i > 0; i--){
+            ledon(255);
+            spi_init();
+            delay(1000);
+            rxcheck = xn_readreg(0x0f);
+            if(rxcheck == 0xc6){
+                break;
+            }
+            ledoff(255);
+            delay(1000);
+        }
+        if(recheck == 0){
+            failloop(3);
+        }
+    }
 #endif 
 
-    delay(100);
-        
+    delay(100);    
    static uint8_t rxaddr[5] = {  0 , 0 , 0 , 0 , 0  };
    nrf24_set_xn297_address( rxaddr );
 
@@ -241,11 +256,14 @@ void rx_init()
    #else
     xn_writereg(RF_SETUP, B00000110);    // power / data rate 1000K
    #endif
-
     xn_writereg(RX_PW_P0, 15+ crc_en *2);  // payload size
     xn_writereg(SETUP_RETR, 0); // no retransmissions
     xn_writereg(SETUP_AW, 3);   // address size (5 bytes)
     xn_writereg(RF_CH, 0);      // bind on channel 0
+    _spi_write_address(ACTIVATE, 0x73); // Activate feature register
+    xn_writereg(NRF_24_DYNPD, 0);       // Disable dynamic payload length on all pipes
+    xn_writereg(NRF_24_FEATURE, 1); 
+    _spi_write_address(ACTIVATE, 0x73);
     xn_command(FLUSH_RX);
     xn_writereg(0, XN_TO_RX);   // power up, crc disabled, rx mode
 

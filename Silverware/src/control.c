@@ -559,7 +559,7 @@ extern float throttlehpf( float in );
 		if (flash_feature_2 == 1){
 			// can be made into a function
 			if (vbattfilt < (float) LVC_LOWER_THROTTLE_VOLTAGE_RAW ) 
-			throttle_p = ((float) LVC_LOWER_THROTTLE_VOLTAGE_RAW - vbattfilt) *(float) LVC_LOWER_THROTTLE_KP;
+			throttle_p = ((float) LVC_LOWER_THROTTLE_VOLTAGE_RAW - vbattfilt) * (float) LVC_LOWER_THROTTLE_KP;
 			// can be made into a function
 			if (vbatt_comp < (float) LVC_LOWER_THROTTLE_VOLTAGE) 
 			throttle_p = ((float) LVC_LOWER_THROTTLE_VOLTAGE - vbatt_comp) *(float) LVC_LOWER_THROTTLE_KP;	
